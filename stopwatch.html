@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch Web Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .stopwatch {
+            text-align: center;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .time {
+            font-size: 3rem;
+            margin: 20px 0;
+            color: #333;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .buttons button.start {
+            background-color: #28a745;
+            color: white;
+        }
+        .buttons button.pause {
+            background-color: #ffc107;
+            color: white;
+        }
+        .buttons button.reset {
+            background-color: #dc3545;
+            color: white;
+        }
+        .lap-times {
+            margin-top: 20px;
+        }
+        .lap-times ul {
+            list-style: none;
+            padding: 0;
+        }
+        .lap-times li {
+            background: #f8f9fa;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <h1>Stopwatch</h1>
+        <div class="time" id="time">00:00:00</div>
+        <div class="buttons">
+            <button class="start" onclick="startStopwatch()">Start</button>
+            <button class="pause" onclick="pauseStopwatch()">Pause</button>
+            <button class="reset" onclick="resetStopwatch()">Reset</button>
+            <button class="lap" onclick="recordLap()">Lap</button>
+        </div>
+        <div class="lap-times">
+            <h2>Lap Times</h2>
+            <ul id="lap-times"></ul>
+        </div>
+    </div>
+
+    <script>
+        let timer;
+        let elapsedTime = 0;
+        let isRunning = false;
+
+        function formatTime(milliseconds) {
+            const totalSeconds = Math.floor(milliseconds / 1000);
+            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const seconds = String(totalSeconds % 60).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        function updateDisplay() {
+            const timeDisplay = document.getElementById('time');
+            timeDisplay.textContent = formatTime(elapsedTime);
+        }
+
+        function startStopwatch() {
+            if (!isRunning) {
+                isRunning = true;
+                const startTime = Date.now() - elapsedTime;
+                timer = setInterval(() => {
+                    elapsedTime = Date.now() - startTime;
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+
+        function pauseStopwatch() {
+            clearInterval(timer);
+            isRunning = false;
+        }
+
+        function resetStopwatch() {
+            clearInterval(timer);
+            elapsedTime = 0;
+            isRunning = false;
+            updateDisplay();
+            const lapTimesList = document.getElementById('lap-times');
+            lapTimesList.innerHTML = '';
+        }
+
+        function recordLap() {
+            const lapTimesList = document.getElementById('lap-times');
+            const lapTime = document.createElement('li');
+            lapTime.textContent = formatTime(elapsedTime);
+            lapTimesList.appendChild(lapTime);
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
